@@ -12,6 +12,7 @@ import json
 import tf
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
+import colorsys
 
 class YOLOv8InferenceNode:
     def __init__(self):
@@ -62,7 +63,7 @@ class YOLOv8InferenceNode:
                 xyz0 = self.uv_to_XY(result[0], result[1], depth0)
                 xyz1 = self.uv_to_XY(result[2], result[3], depth1)
 
-                resultxy = {"box_px":str(result), "box_xyz" : [str(xyz0), str(xyz1)]}
+                resultxy = {"box_px":str(result), "box_xyz" : [str(xyz0), str(xyz1)], "TF_name" : "screw_"+str(index)}
                 center = [(xyz0[0]+xyz1[0])/2, (xyz0[1]+xyz1[1])/2, (xyz0[2] + xyz1[2])/2]
                 self.publish_transform(p=center, index=index)
                 resultlist_xyz.append(resultxy)
@@ -87,20 +88,23 @@ class YOLOv8InferenceNode:
         # Draw bounding boxes and labels on the image
         self.resultlist = []
         for result in results:
-            for box in result.boxes:
+            for idx, box in enumerate(result.boxes):
                 x1, y1, x2, y2 = int(box.xyxy[0][0].item()), int(box.xyxy[0][1].item()), int(box.xyxy[0][2].item()), int(box.xyxy[0][3].item())
                 result_px = [x1, y1, x2, y2]
                 self.resultlist.append(result_px)
-                
         
                 conf = box.conf
                 cls = int(box.cls)
                 # Draw the bounding box
-                cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                step = 255/len(results)*2
+                red = int(idx*step)
+
+                colour = (red, 255, 255)
+                cv2.rectangle(image, (x1, y1), (x2, y2), colour, 2)
                 
                 # Draw the label
                 label = f"{cls}: {conf}"
-                cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(image, "Screw"+str(idx)+" "+label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, colour, 2)
 
         return image
     
