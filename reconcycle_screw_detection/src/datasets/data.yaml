@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['HexScrew', 'PhillipsScrewHead']
+
+roboflow:
+  workspace: rwth-aachen-dn6ce
+  project: full-screw-head-detection
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/rwth-aachen-dn6ce/full-screw-head-detection/dataset/2
