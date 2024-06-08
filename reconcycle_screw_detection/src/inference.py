@@ -29,8 +29,8 @@ class YOLOv8InferenceNode:
         self.resultlist = None
 
         self.bridge = CvBridge()
-        # self.yolo_model = YOLO('/root/catkin_ws/src/reconcycle_screw_detection/src/datasets/runs/detect/train/weights/best.pt')
-        self.yolo_model = YOLO('datasets/runs/detect/train/weights/best.pt')
+        self.yolo_model = YOLO('/root/catkin_ws/src/reconcycle_screw_detection/src/datasets/runs/detect/train/weights/best.pt')
+        #self.yolo_model = YOLO('datasets/runs/detect/train/weights/best.pt')
 
         self.image_sub = rospy.Subscriber(COLOUR_IMG_SUB_TOPIC, Image, self.image_callback)
         self.depth_sub = rospy.Subscriber(DEPTH_IMG_SUB_TOPIC, Image, self.depth_callback)
@@ -186,7 +186,7 @@ class YOLOv8InferenceNode:
         ----
             camera_topic (str) : Specify from which camera we should pull the parameters
         """
-        caminfo = rospy.wait_for_message(self.CAMERA_INFO_TOPIC, CameraInfo, timeout=10)
+        caminfo = rospy.wait_for_message(topic, CameraInfo, timeout=10)
         self.camera_fx = caminfo.K[0]
         self.camera_cx = caminfo.K[2]
         self.camera_fy = caminfo.K[4]
