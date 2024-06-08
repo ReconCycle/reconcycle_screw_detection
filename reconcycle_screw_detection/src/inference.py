@@ -29,7 +29,7 @@ class YOLOv8InferenceNode:
         self.resultlist = None
 
         self.bridge = CvBridge()
-        self.yolo_model = YOLO('/root/catkin_ws/src/reconcycle_screw_detection/src/datasets/runs/detect/train/weights/best.pt')
+        self.yolo_model = YOLO('/root/catkin_ws/src/reconcycle_screw_detection/reconcycle_screw_detection/src/datasets/runs/detect/train/weights/best.pt')
         #self.yolo_model = YOLO('datasets/runs/detect/train/weights/best.pt')
 
         self.image_sub = rospy.Subscriber(COLOUR_IMG_SUB_TOPIC, Image, self.image_callback)
@@ -38,6 +38,7 @@ class YOLOv8InferenceNode:
         self.result_pub = rospy.Publisher(RESULT_PUB_TOPIC, String, queue_size=10)
         self.tf_pub = tf2_ros.TransformBroadcaster()
         self.camInfo(topic=CAMERA_INFO_TOPIC)
+        print(f"{Fore.GREEN}Running inference...{Fore.RESET}")
 
     def image_callback(self, data:Image):
         """
@@ -58,7 +59,6 @@ class YOLOv8InferenceNode:
 
         # Run YOLOv8 inference
         detection_results = self.yolo_model(cv_image)
-        print(f"{Fore.MAGENTA}Result type: {type(detection_results)}")
         annotated_image = self.annotate_image(cv_image, detection_results)
 
         try:
@@ -108,7 +108,7 @@ class YOLOv8InferenceNode:
             rospy.logerr("Error: {0}".format(e))
             return
     
-    def annotate_image(self, image:cv2.Mat, results:list):
+    def annotate_image(self, image, results:list):
         """
         Process YOLOv8 inference results and draw them on the original image.
 
