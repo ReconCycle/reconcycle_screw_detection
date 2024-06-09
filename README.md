@@ -131,7 +131,25 @@ Now that the workspace has been sourced, the screw detection inference can be ra
 rosrun reconcycle-screw-detection inference.py
 ```
 
-*Prior to running the software, some variables need to be adjusted to suit each users's particular setup*
+Prior to running the software, some variables need to be adjusted to suit each users's particular setup
+
 ```python
-#TODO
+def __init__(self):
+    """
+    Initialize the YOLOv8InferenceNode class. This includes setting up the  CvBridge for image conversion,
+    loading the YOLO model, setting up ROS subscribers and publishers, and initializing camera parameters.
+    """
+    CAMERA_NAME = "realsense"
+    COLOUR_IMG_SUB_TOPIC = f"/{CAMERA_NAME}/color/image_raw"
+    DEPTH_IMG_SUB_TOPIC = f"/{CAMERA_NAME}/aligned_depth_to_color/image_raw"
+    ANNOTATED_IMG_PUB_TOPIC = f"/{CAMERA_NAME}/color/annotated_screws"
+    RESULT_PUB_TOPIC = f"/{CAMERA_NAME}/screw_detections/"
+    CAMERA_INFO_TOPIC = f"/{CAMERA_NAME}/color/camera_info"
+    self.resultlist = None
 ```
+
+When using the `ros_realsense` container from the [Reconcycle repo](https://github.com/ReconCycle/) the default configuration should work straight out of the box. If using custom solution, update the value of the constants (CAPS) in the code block above.
+
+The output annotated image can be viewed by subscribing to the `ANNOTATED_IMG_PUB_TOPIC`, the hitboxes, locations and confidence scores of the detected fasteners can be read by subscribing to the `RESULT_PUB_TOPIC`.
+
+The inference script publishes the locations of the detected fasteneres to `/tf`. Each detections is marked with the child frame corresponding to the detection's index. **Example:** `screw_0`. The parent frame of these transformations is `panda_2/realsense`, it can be adjusted accordingly if the camera is mounted elsewere.
